@@ -24,7 +24,7 @@ class Charge
 			{
 			sf::CircleShape cs;
 			cs.setPosition(r);
-			cs.setFillColor(sf::Color(255, 0, 255));
+			cs.setFillColor(sf::Color(255*(charge > 0), 255*(charge < 0), 255*(charge < 0)));
 			cs.setRadius(pow (fabs (charge), 0.33333f));
 			cs.setOrigin(cs.getRadius() / 2.f, cs.getRadius() / 2.f);
 			window.draw(cs);
@@ -45,19 +45,35 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1600, 900), "Electric field strength");
 	
 	std::list <Charge> charges;
-	charges.push_back (Charge (sf::Vector2f (405, 405),  10));
-	charges.push_back (Charge (sf::Vector2f (1205, 405), -10));
+	//charges.push_back (Charge (sf::Vector2f (910, 410),  10));
+	//charges.push_back (Charge (sf::Vector2f (710, 410), -10));
+
+	float newCharge_charge = 0;
 
 	while (window.isOpen())
 		{
 		sf::Event windowEvent;
-		while (window.pollEvent(windowEvent))
-			{
-			if (windowEvent.key.code == sf::Event::Closed)
-				window.close();
-			}
 
+		sf::Vector2i MousePos = sf::Mouse::getPosition (window);
+		sf::Vector2f PointerPos = window.mapPixelToCoords (MousePos);
+
+		while (window.pollEvent (windowEvent))
+			{
+			if (windowEvent.type == sf::Event::Closed) 
+				window.close ();
+			if (windowEvent.type == sf::Event::MouseButtonPressed)
+				charges.push_back (Charge (PointerPos, newCharge_charge));
+			}
+		// Mouse
+
+		if (sf::Keyboard::isKeyPressed (sf::Keyboard::Equal))
+			newCharge_charge += 1.f;
+		if (sf::Keyboard::isKeyPressed (sf::Keyboard::Dash))
+			newCharge_charge -= 1.f;
+
+		// Graphics
 		window.clear();
+
 		for (unsigned int x = 0; x < window.getSize().x; x += 20)
 			for (unsigned int y = 0; y < window.getSize().y; y += 20)
 				{
@@ -66,7 +82,7 @@ int main()
 					{
 					dir -= K*a.getCharge()/pow (getVecL (sf::Vector2f (x, y) - a.getR()), 3.f) * (a.getR() - sf::Vector2f(x, y));	
 					}
-				dir /= getVecL(dir) / 10;
+				dir /= getVecL(dir) / 20;
 
 				sf::Vertex line [] =
 					{
@@ -75,6 +91,14 @@ int main()
 					};
 				window.draw(line, 2, sf::PrimitiveType::LineStrip);
 				}
+		
+		sf::CircleShape cs;
+		cs.setPosition (PointerPos);
+		cs.setFillColor (sf::Color (0, 255, 0));
+		cs.setRadius (pow (fabs (newCharge_charge), 0.33333f));
+		cs.setOrigin (cs.getRadius () / 2.f, cs.getRadius () / 2.f);
+		window.draw (cs);
+
 		for (auto a : charges)
 			a.draw(window);
 
