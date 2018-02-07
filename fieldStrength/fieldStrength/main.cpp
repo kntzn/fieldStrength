@@ -5,6 +5,7 @@
 #define K 9000000000 // = [N*m^2/C^2]
 
 #define fieldVisStep 10
+#define offsetVisDegree 5
 
 float getVecL(sf::Vector2f vec)
 	{
@@ -87,7 +88,7 @@ int main()
 				{
 				if (windowEvent.key.code == sf::Mouse::Left)
 					{
-					charges.push_back (Charge (PointerPos, newCharge_charge));
+					charges.push_back (Charge (PointerPos+sf::Vector2f(0.5f, 0.5f), newCharge_charge));
 					updateFlag = true;
 					}
 				if (windowEvent.key.code == sf::Mouse::Right)
@@ -134,8 +135,8 @@ int main()
 
 						sf::Vertex line[] =
 							{
-							sf::Vertex(sf::Vector2f(x, y) - dir / 2.f, sf::Color(255, 0, 0, 255 * pow(strength / maxStrength, 0.2f))),
-							sf::Vertex(sf::Vector2f(x, y) + dir / 2.f, sf::Color(0, 255, 255, 255 * pow(strength / maxStrength, 0.2f)))
+							sf::Vertex(sf::Vector2f(x, y) - dir / 2.f, sf::Color(255, 0, 0, 255 * pow(strength / maxStrength, 1.f / offsetVisDegree))),
+							sf::Vertex(sf::Vector2f(x, y) + dir / 2.f, sf::Color(0, 255, 255, 255 * pow(strength / maxStrength, 1.f / offsetVisDegree)))
 							};
 						window.draw(line, 2, sf::PrimitiveType::LineStrip);
 						}
@@ -150,7 +151,7 @@ int main()
 
 						sf::RectangleShape rs;
 						rs.setSize (sf::Vector2f(fieldVisStep, fieldVisStep));
-						rs.setFillColor(sf::Color(255, 255, 255, 255 * pow(strength / maxStrength, 0.5f)));
+						rs.setFillColor(sf::Color(255, 255, 255, 255 * pow(strength / maxStrength, 1.f / offsetVisDegree)));
 						rs.setPosition(x, y);
 
 						window.draw(rs);
