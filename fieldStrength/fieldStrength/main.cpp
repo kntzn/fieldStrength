@@ -4,8 +4,9 @@
 
 #define K 9000000000 // = [N*m^2/C^2]
 
-#define fieldVisStep 10
+#define fieldVisStep 5
 #define offsetVisDegree 5
+#define hardness 5
 
 float getVecL(sf::Vector2f vec)
 	{
@@ -73,6 +74,7 @@ int main()
 
 	while (window.isOpen ())
 		{
+		// Mouse, keyboard & window events
 		sf::Event windowEvent;
 
 		sf::Vector2i MousePos = sf::Mouse::getPosition (window);
@@ -108,7 +110,6 @@ int main()
 		window.clear ();
 
 		// Field strenght
-
 		if (updateFlag)
 			{
 			for (unsigned int x = 0; x < window.getSize().x; x += fieldVisStep)
@@ -148,10 +149,9 @@ int main()
 						for (auto a : charges)
 							strength += K*fabs (a.getCharge()) / pow(getVecL(sf::Vector2f(x, y) - a.getR()), 2.f);
 
-
 						sf::RectangleShape rs;
 						rs.setSize (sf::Vector2f(fieldVisStep, fieldVisStep));
-						rs.setFillColor(sf::Color(255, 255, 255, 255 * pow(strength / maxStrength, 1.f / offsetVisDegree)));
+						rs.setFillColor(sf::Color(255, 255, 255, int (255 / hardness * (pow(strength / maxStrength, 1.f / offsetVisDegree)))*hardness));
 						rs.setPosition(x, y);
 
 						window.draw(rs);
@@ -165,13 +165,13 @@ int main()
 			spr.setTexture (texture);
 			window.draw(spr);
 			}
+
 		// New charge point
 		Charge newCharge(PointerPos, newCharge_charge);
 		newCharge.draw(window, text, true);
 
 		for (auto a : charges)
-			a.draw(window, text);
-			
+			a.draw(window, text);	
 
 		window.display();
 		}
